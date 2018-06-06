@@ -278,11 +278,11 @@ function skp_build_skope_id( $args = array() ) {
     // generate skope_id for two cases : local or group
     switch( $args[ 'skope_level'] ) {
           case 'local' :
-              $skope_id = strtolower( SKOPE_ID_PREFIX . $args[ 'skope_string' ] );
+              $skope_id = strtolower( NIMBLE_SKOPE_ID_PREFIX . $args[ 'skope_string' ] );
           break;
           case 'group' :
               if ( ! empty( $args[ 'skope_type' ] ) ) {
-                  $skope_id = strtolower( SKOPE_ID_PREFIX . 'all_' . $args[ 'skope_type' ] );
+                  $skope_id = strtolower( NIMBLE_SKOPE_ID_PREFIX . 'all_' . $args[ 'skope_type' ] );
               }
           break;
     }
@@ -355,7 +355,7 @@ function skp_get_skope_title( $args = array() ) {
         }
     }
     if ( 'group' == $level || 'special_group' == $level ) {
-        $title = $is_prefixed ? __( 'Options for all', 'text_domain_to_be_replaced') . ' ' : __( 'All' , 'hueman-adons' ) . ' ';
+        $title = $is_prefixed ? __( 'Options for all', 'text_domain_to_be_replaced') . ' ' : __( 'All' , 'text_domain_to_be_replaced' ) . ' ';
         switch( $meta_type ) {
             case 'post' :
                 $type_obj = get_post_type_object( $type );

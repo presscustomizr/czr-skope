@@ -278,11 +278,11 @@ function skp_build_skope_id( $args = array() ) {
     // generate skope_id for two cases : local or group
     switch( $args[ 'skope_level'] ) {
           case 'local' :
-              $skope_id = strtolower( SKOPE_ID_PREFIX . $args[ 'skope_string' ] );
+              $skope_id = strtolower( NIMBLE_SKOPE_ID_PREFIX . $args[ 'skope_string' ] );
           break;
           case 'group' :
               if ( ! empty( $args[ 'skope_type' ] ) ) {
-                  $skope_id = strtolower( SKOPE_ID_PREFIX . 'all_' . $args[ 'skope_type' ] );
+                  $skope_id = strtolower( NIMBLE_SKOPE_ID_PREFIX . 'all_' . $args[ 'skope_type' ] );
               }
           break;
     }
@@ -355,7 +355,7 @@ function skp_get_skope_title( $args = array() ) {
         }
     }
     if ( 'group' == $level || 'special_group' == $level ) {
-        $title = $is_prefixed ? __( 'Options for all', 'text_domain_to_be_replaced') . ' ' : __( 'All' , 'hueman-adons' ) . ' ';
+        $title = $is_prefixed ? __( 'Options for all', 'text_domain_to_be_replaced') . ' ' : __( 'All' , 'text_domain_to_be_replaced' ) . ' ';
         switch( $meta_type ) {
             case 'post' :
                 $type_obj = get_post_type_object( $type );
@@ -445,7 +445,6 @@ function skp_is_previewing_live_changeset() {
 
 ////////////////////////////////////////////////////////////////
 // FLAT SKOPE BASE
-//  This Class is instantiated on 'hu_hueman_loaded', declared in /init-core.php
 if ( ! class_exists( 'Flat_Skop_Base' ) ) :
     class Flat_Skop_Base {
         static $instance;
@@ -461,8 +460,8 @@ if ( ! class_exists( 'Flat_Skop_Base' ) ) :
                 'base_url_path' => ''//NIMBLE_BASE_URL . '/inc/czr-skope/'
             );
             $params = wp_parse_args( $params, $defaults );
-            if ( ! defined( 'SKOPE_BASE_URL' ) ) { define( 'SKOPE_BASE_URL' , $params['base_url_path'] ); }
-            if ( ! defined( 'SKOPE_ID_PREFIX' ) ) { define( 'SKOPE_ID_PREFIX' , "skp__" ); }
+            if ( ! defined( 'NIMBLE_SKOPE_BASE_URL' ) ) { define( 'NIMBLE_SKOPE_BASE_URL' , $params['base_url_path'] ); }
+            if ( ! defined( 'NIMBLE_SKOPE_ID_PREFIX' ) ) { define( 'NIMBLE_SKOPE_ID_PREFIX' , "skp__" ); }
 
             $this->skp_register_and_load_control_assets();
             $this->skp_export_skope_data_and_schedule_sending_to_panel();
@@ -488,7 +487,7 @@ if ( ! class_exists( 'Flat_Skop_Register_And_Load_Control_Assets' ) ) :
 
               $_prod_script_path = sprintf(
                   '%1$s/assets/czr/js/%2$s' ,
-                  SKOPE_BASE_URL,
+                  NIMBLE_SKOPE_BASE_URL,
                   $_use_unminified ? 'czr-skope-base.js' : 'czr-skope-base.min.js'
               );
 
