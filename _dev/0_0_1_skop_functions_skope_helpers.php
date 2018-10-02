@@ -418,6 +418,8 @@ function skp_is_customizing() {
     if ( is_admin() && isset( $pagenow ) && 'customize.php' == $pagenow ) {
         $is_customizing = true;
     //hu_is_customize_preview_frame() ?
+    // Note : is_customize_preview() is not able to differentiate when previewing in the customizer and when previewing a changeset draft.
+    // @todo => change this
     } else if ( is_customize_preview() || ( ! is_admin() && isset($_REQUEST['customize_messenger_channel']) ) ) {
         $is_customizing = true;
     // hu_doing_customizer_ajax()
