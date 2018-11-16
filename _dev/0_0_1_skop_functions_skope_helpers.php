@@ -264,7 +264,7 @@ function skp_get_skope_id( $level = 'local' ) {
     }
     // error_log('$skope_id_to_return => ' . $level . ' ' . $skope_id_to_return );
     // error_log( print_r( Flat_Skop_Base() -> current_skope_ids , true ) );
-    return $skope_id_to_return;
+    return apply_filters( 'skp_get_skope_id', $skope_id_to_return, $level );
 }
 
 //@param args = array(
