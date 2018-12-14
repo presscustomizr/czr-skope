@@ -143,9 +143,12 @@ function skp_get_skope( $_requesting_wot = null, $_return_string = true, $reques
             else if ( false !== $meta_type && ! $obj_id ) {
                 $_return = array( "meta_type" => "{$meta_type}", "type" => "{$type}" );
             }
-            //LOCAL WITH NO GROUP : home, 404, search, date, post type archive
+            //LOCAL WITH NO GROUP : home ( when home displays "Your latests posts" ) , 404, search, date, post type archive
             else if ( false !== $obj_id ) {
                 $_return = array( "id" => "{$obj_id}" );
+            }
+            else {
+                error_log( __FUNCTION__ . ' error when building the local skope, no object_id provided.');
             }
         break;
     }
@@ -196,7 +199,6 @@ function skp_get_query_skope() {
     $type         = false;
     $obj_id       = false;
 
-
     if ( is_object( $current_obj ) ) {
         //post, custom post types, page
         if ( isset($current_obj -> post_type) ) {
@@ -225,14 +227,44 @@ function skp_get_query_skope() {
     if ( is_post_type_archive() ) {
         $obj_id     = 'post_type_archive' . '_'. $wp_the_query ->get( 'post_type' );
     }
-    if ( is_404() )
-      $obj_id  = '404';
-    if ( is_search() )
-      $obj_id  = 'search';
-    if ( is_date() )
-      $obj_id  = 'date';
-    if ( skp_is_real_home() )
-      $obj_id  = 'home';
+    if ( is_404() ) {
+        $obj_id  = '404';
+    }
+    if ( is_search() ) {
+        $obj_id  = 'search';
+    }
+    if ( is_date() ) {
+        $obj_id  = 'date';
+    }
+    if ( skp_is_real_home() ) {
+        $obj_id  = 'home';
+        // December 2018
+        // when the home page is a page, the skope now includes the page id, instead of being generic as it was since then : skp__post_page_home
+        // This has been introduced to facilitate the compatibility of the Nimble Builder with multilanguage plugins like polylang
+        // => Allows user to create a different home page for each languages
+        //
+        // To summarize,
+        // Before dec 2018 :
+        // - home page is blog page => skope_id = skp___home
+        // - home page is page => skope_id = skp__post_page_home
+        //
+        // After Dec 2018
+        // - hope page is blog page => skope_id is unchanged = skp__home
+        // - home page is a page => skope_id is changed to = skp__post_page_{$static_home_page_id}
+        //
+        // This means that if Nimble sections, or any other contextualizations had been made on home when 'page' === get_option( 'show_on_front' ),
+        // for which the corresponding skope_id was skp__post_page_home,
+        // those settings have to be copied in the skp__post_page_{$static_home_page_id} skope settings
+
+        // If we are on the real home page, but displaying a static page then set the static page id as obj_id
+        if ( ! is_home() && 'page' === get_option( 'show_on_front' ) ) {
+            $home_page_id = get_option( 'page_on_front' );
+            if ( 0 < $home_page_id ) {
+                $obj_id = $home_page_id;
+            }
+        }
+    }
+
 
     return apply_filters( 'skp_get_query_skope' , array( 'meta_type' => $meta_type , 'type' => $type , 'obj_id' => $obj_id ) , $current_obj );
 }
