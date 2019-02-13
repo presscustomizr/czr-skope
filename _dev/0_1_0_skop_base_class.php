@@ -5,7 +5,8 @@
 if ( ! class_exists( 'Flat_Skop_Base' ) ) :
     class Flat_Skop_Base {
         static $instance;
-        public $current_skope_ids = array();//will be cached on the first invokation of skp_get_skope_id, if 'wp' done
+        public $query_skope = array();//<= will cache the query skope ( otherwise called multiple times ) on the first invokation of skp_get_query_skope() IF 'wp' done
+        public $current_skope_ids = array();// will cache the skope ids on the first invokation of skp_get_skope_id, if 'wp' done
 
         public static function skp_get_instance( $params ) {
             if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Flat_Skop_Base ) )

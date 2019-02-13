@@ -78,7 +78,7 @@ function skp_trim_text( $text, $text_length, $more ) {
 /**
 * Return the current skope
 * Front / Back agnostic.
-* @param $_requesting_wot is a string with the follwing possible values : 'meta_type' (like post) , 'type' (like page), 'id' (like page id)
+* @param $_requesting_wot is a string with the following possible values : 'meta_type' (like post) , 'type' (like page), 'id' (like page id)
 * @param $_return_string string param stating if the return value should be a string or an array
 * @param $requested_parts is an array of parts looking like
 * Array
@@ -99,13 +99,13 @@ function skp_get_skope( $_requesting_wot = null, $_return_string = true, $reques
 
     // if $parts are provided, use them.
     $parts    = ( is_array( $requested_parts ) && ! empty( $requested_parts ) ) ? $requested_parts : skp_get_query_skope();
-    // if ( is_array( $requested_parts ) && ! empty( $requested_parts ) ) {
-    //   error_log( '<SKOPE PARTS>' );
-    //   error_log( print_r( $parts, true ) );
-    //   error_log( '</SKOPE PARTS>' );
-    // }
+
+    // error_log( '<SKOPE PARTS>' );
+    // error_log( print_r( $parts, true ) );
+    // error_log( '</SKOPE PARTS>' );
+
     $_return  = array();
-    $meta_type = $type = $obj_id = '';
+    $meta_type = $type = $obj_id = false;
 
     if ( is_array( $parts ) && ! empty( $parts ) ) {
         $meta_type  = isset( $parts['meta_type'] ) ? $parts['meta_type'] : false;
@@ -198,25 +198,36 @@ function skp_get_query_skope() {
     global $wp_the_query;
     if ( ! isset( $wp_the_query ) || empty( $wp_the_query ) )
       return array();
+    // is it cached already ?
+    if ( ! empty( Flat_Skop_Base()->query_skope ) )
+      return Flat_Skop_Base()->query_skope;
 
-    $current_obj  = get_queried_object();
-    $meta_type    = false;
-    $type         = false;
-    $obj_id       = false;
+    $queried_object  = get_queried_object();
 
-    if ( is_object( $current_obj ) ) {
+    // error_log( '<GET QUERIED OBJECT>' . gettype( $queried_object ) );
+    // error_log( print_r( $wp_the_query , true ) );
+    // error_log( '</GET QUERIED OBJECT>' );
+
+    $meta_type = $type = $obj_id = false;
+
+    // The queried object is NULL on
+    // - home when displaying the latest posts
+    // - date archives
+    // - 404 page
+    // - search page
+    if ( ! is_null( $queried_object ) && is_object( $queried_object ) ) {
         //post, custom post types, page
-        if ( isset($current_obj -> post_type) ) {
+        if ( isset($queried_object -> post_type) ) {
             $meta_type  = 'post';
-            $type       = $current_obj -> post_type;
-            $obj_id     = $current_obj -> ID;
+            $type       = $queried_object -> post_type;
+            $obj_id     = $queried_object -> ID;
         }
 
         //taxinomies : tags, categories, custom tax type
-        if ( isset($current_obj -> taxonomy) && isset($current_obj -> term_id) ) {
+        if ( isset($queried_object -> taxonomy) && isset($queried_object -> term_id) ) {
             $meta_type  = 'tax';
-            $type       = $current_obj -> taxonomy;
-            $obj_id     = $current_obj -> term_id;
+            $type       = $queried_object -> taxonomy;
+            $obj_id     = $queried_object -> term_id;
         }
     }
 
@@ -241,6 +252,7 @@ function skp_get_query_skope() {
     if ( is_date() ) {
         $obj_id  = 'date';
     }
+
     if ( skp_is_real_home() ) {
         $obj_id  = 'home';
         // December 2018
@@ -270,8 +282,12 @@ function skp_get_query_skope() {
         }
     }
 
+    // cache now
+    if ( did_action( 'wp' ) ) {
+        Flat_Skop_Base()->query_skope = apply_filters( 'skp_get_query_skope' , array( 'meta_type' => $meta_type , 'type' => $type , 'obj_id' => $obj_id ) , $queried_object );
+    }
 
-    return apply_filters( 'skp_get_query_skope' , array( 'meta_type' => $meta_type , 'type' => $type , 'obj_id' => $obj_id ) , $current_obj );
+    return Flat_Skop_Base()->query_skope;
 }
 
 
@@ -282,18 +298,18 @@ function skp_get_skope_id( $level = 'local' ) {
     // We'll get hight performances with a cached value instead of using the skp_get_skope_id() function on each call.
     $new_skope_ids = array( 'local' => '_skope_not_set_', 'group' => '_skope_not_set_' );
     if ( did_action( 'wp' ) ) {
-        if ( empty( Flat_Skop_Base() -> current_skope_ids ) ) {
+        if ( empty( Flat_Skop_Base()->current_skope_ids ) ) {
             $new_skope_ids['local'] = skp_build_skope_id( array( 'skope_string' => skp_get_skope(), 'skope_level' => 'local' ) );
             $new_skope_ids['group'] = skp_build_skope_id( array( 'skope_level' => 'group' ) );
 
-            Flat_Skop_Base() -> current_skope_ids = $new_skope_ids;
+            Flat_Skop_Base()->current_skope_ids = $new_skope_ids;
 
             $skope_id_to_return = $new_skope_ids[ $level ];
             // error_log('<SKOPE ID cached in skp_get_skope_id>');
             // error_log( print_r( $new_skope_ids, true ) );
             // error_log('</SKOPE ID cached in skp_get_skope_id>');
         } else {
-            $new_skope_ids = Flat_Skop_Base() -> current_skope_ids;
+            $new_skope_ids = Flat_Skop_Base()->current_skope_ids;
             $skope_id_to_return = $new_skope_ids[ $level ];
         }
     } else {
@@ -447,10 +463,14 @@ function skp_skope_has_a_group( $meta_type ) {
     );
 }
 
+
+
 //@return bool
 function skp_is_real_home() {
+  // Warning : when show_on_front is a page, but no page_on_front has been picked yet, is_home() is true
+  // beware of https://github.com/presscustomizr/nimble-builder/issues/349
   return ( is_home() && ( 'posts' == get_option( 'show_on_front' ) || '__nothing__' == get_option( 'show_on_front' ) ) )
-  || ( 0 == get_option( 'page_on_front' ) && 'page' == get_option( 'show_on_front' ) )//<= this is the case when the user want to display a page on home but did not pick a page yet
+  || ( is_home() && 0 == get_option( 'page_on_front' ) && 'page' == get_option( 'show_on_front' ) )//<= this is the case when the user want to display a page on home but did not pick a page yet
   || is_front_page();
 }
 
