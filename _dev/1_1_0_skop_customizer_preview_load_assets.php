@@ -20,11 +20,14 @@ if ( ! class_exists( 'Flat_Export_Skope_Data_And_Send_To_Panel' ) ) :
 
               // $_czr_scopes = array( );
               $_czr_skopes            = $this->_skp_get_json_export_ready_skopes();
+              $_czr_query_data        = $this->_skp_get_json_export_ready_query_data();
+
               ?>
                   <script type="text/javascript" id="czr-print-skop">
                       (function ( _export ){
                               _export.czr_new_skopes        = <?php echo wp_json_encode( $_czr_skopes ); ?>;
                               _export.czr_stylesheet    = '<?php echo get_stylesheet(); ?>';
+                              _export.czr_query_params  = <?php echo wp_json_encode($_czr_query_data); ?>;
                       })( _wpCustomizeSettings );
 
                       ( function( api, $, _ ) {
@@ -41,6 +44,16 @@ if ( ! class_exists( 'Flat_Export_Skope_Data_And_Send_To_Panel' ) ) :
                       } )( wp.customize, jQuery, _ );
                   </script>
               <?php
+          }
+
+
+          // introduced in october 2019 for https://github.com/presscustomizr/nimble-builder/issues/401
+          private function _skp_get_json_export_ready_query_data() {
+              global $wp_query;
+              return [
+                'is_singular' => $wp_query->is_singular,
+                'post_id' => get_the_ID()
+              ];
           }
 
           /* ------------------------------------------------------------------------- *
