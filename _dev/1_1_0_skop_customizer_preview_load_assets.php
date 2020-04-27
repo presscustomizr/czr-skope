@@ -2,7 +2,7 @@
 /* ------------------------------------------------------------------------- *
 *  CUSTOMIZE PREVIEW : export skope data and send skope to the panel
 /* ------------------------------------------------------------------------- */
-if ( ! class_exists( 'Flat_Export_Skope_Data_And_Send_To_Panel' ) ) :
+if ( !class_exists( 'Flat_Export_Skope_Data_And_Send_To_Panel' ) ) :
     class Flat_Export_Skope_Data_And_Send_To_Panel extends Flat_Skop_Register_And_Load_Control_Assets {
           // Fired in Flat_Skop_Base::__construct()
           public function skp_export_skope_data_and_schedule_sending_to_panel() {
@@ -12,7 +12,7 @@ if ( ! class_exists( 'Flat_Export_Skope_Data_And_Send_To_Panel' ) ) :
 
           //hook : 'wp_footer'
           public function skp_print_server_skope_data() {
-              if ( ! skp_is_customize_preview_frame() )
+              if ( !skp_is_customize_preview_frame() )
                   return;
 
               global $wp_query, $wp_customize;

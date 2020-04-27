@@ -1,7 +1,7 @@
 <?php
 /////////////////////////////////////////////////////////////////
 // PRINT CUSTOMIZER JAVASCRIPT + LOCALIZED DATA
-if ( ! class_exists( 'Flat_Skop_Register_And_Load_Control_Assets' ) ) :
+if ( !class_exists( 'Flat_Skop_Register_And_Load_Control_Assets' ) ) :
     class Flat_Skop_Register_And_Load_Control_Assets extends Flat_Skop_Base {
           // Fired in Flat_Skop_Base::__construct()
           public function skp_register_and_load_control_assets() {

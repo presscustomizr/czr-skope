@@ -49,12 +49,12 @@ function skp_get_no_group_skope_list() {
 // HELPERS
 
 function skp_trim_text( $text, $text_length, $more ) {
-    if ( ! $text )
+    if ( !$text )
       return '';
 
     $text       = trim( strip_tags( $text ) );
 
-    if ( ! $text_length )
+    if ( !$text_length )
       return $text;
 
     $end_substr = $_text_length = strlen( $text );
@@ -98,16 +98,22 @@ function skp_get_skope( $_requesting_wot = null, $_return_string = true, $reques
     // the id : post id, term id, user id
 
     // if $parts are provided, use them.
-    $parts    = ( is_array( $requested_parts ) && ! empty( $requested_parts ) ) ? $requested_parts : skp_get_query_skope();
+    $parts    = ( is_array( $requested_parts ) && !empty( $requested_parts ) ) ? $requested_parts : skp_get_query_skope();
 
     // error_log( '<SKOPE PARTS>' );
     // error_log( print_r( $parts, true ) );
     // error_log( '</SKOPE PARTS>' );
 
+    // if ( !is_array( $requested_parts ) || empty( $requested_parts ) ) {
+    //   error_log( '<skp_get_query_skope()>' );
+    //   error_log( print_r( skp_get_query_skope(), true ) );
+    //   error_log( '</skp_get_query_skope()>' );
+    // }
+
     $_return  = array();
     $meta_type = $type = $obj_id = false;
 
-    if ( is_array( $parts ) && ! empty( $parts ) ) {
+    if ( is_array( $parts ) && !empty( $parts ) ) {
         $meta_type  = isset( $parts['meta_type'] ) ? $parts['meta_type'] : false;
         $type       = isset( $parts['type'] ) ? $parts['type'] : false;
         $obj_id     = isset( $parts['obj_id'] ) ? $parts['obj_id'] : false;
@@ -140,7 +146,7 @@ function skp_get_skope( $_requesting_wot = null, $_return_string = true, $reques
                 $_return = array( "meta_type" => "{$meta_type}" , "type" => "{$type}", "id" => "{$obj_id}" );
             }
             //GROUP
-            else if ( false !== $meta_type && ! $obj_id ) {
+            else if ( false !== $meta_type && !$obj_id ) {
                 $_return = array( "meta_type" => "{$meta_type}", "type" => "{$type}" );
             }
             //LOCAL WITH NO GROUP : home ( when home displays "Your latests posts" ) , 404, search, date, post type archive
@@ -153,24 +159,25 @@ function skp_get_skope( $_requesting_wot = null, $_return_string = true, $reques
                 if ( defined( 'NIMBLE_DEV' ) && NIMBLE_DEV ) {
                     error_log( __FUNCTION__ . ' error when building the local skope, no object_id provided.');
                     error_log( print_r( $parts, true) );
+                    sek_error_log('CURRENT FILTER ?' . current_filter() );
                 }
             }
         break;
     }
 
     //return the parts array if not a string requested
-    if ( ! $_return_string ) {
+    if ( !$_return_string ) {
       return $_return;
     }
 
     //don't go further if not an array or empty
-    if ( ! is_array( $_return ) || ( is_array( $_return ) && empty( $_return ) ) ) {
+    if ( !is_array( $_return ) || ( is_array( $_return ) && empty( $_return ) ) ) {
       return '';
     }
 
     //if a specific part of the ctx is requested, don't concatenate
     //return the part if exists
-    if ( ! is_null( $_requesting_wot ) ) {
+    if ( !is_null( $_requesting_wot ) ) {
       return isset( $_return[ $_requesting_wot ] ) ? $_return[ $_requesting_wot ] : '';
     }
 
@@ -189,17 +196,17 @@ function skp_get_skope( $_requesting_wot = null, $_return_string = true, $reques
 
 /**
 * skope builder from the wp $query
-* !! has to be fired after 'template_redirect'
+* !!has to be fired after 'template_redirect'
 * Used on front ( not customizing preview ? => @todo make sure of this )
 * @return  array of ctx parts
 */
 function skp_get_query_skope() {
     //don't call get_queried_object if the $query is not defined yet
     global $wp_the_query;
-    if ( ! isset( $wp_the_query ) || empty( $wp_the_query ) )
+    if ( !isset( $wp_the_query ) || empty( $wp_the_query ) )
       return array();
     // is it cached already ?
-    if ( ! empty( Flat_Skop_Base()->query_skope ) )
+    if ( !empty( Flat_Skop_Base()->query_skope ) )
       return Flat_Skop_Base()->query_skope;
 
     $queried_object  = get_queried_object();
@@ -215,7 +222,7 @@ function skp_get_query_skope() {
     // - date archives
     // - 404 page
     // - search page
-    if ( ! is_null( $queried_object ) && is_object( $queried_object ) ) {
+    if ( !is_null( $queried_object ) && is_object( $queried_object ) ) {
         //post, custom post types, page
         if ( isset($queried_object -> post_type) ) {
             $meta_type  = 'post';
@@ -274,7 +281,7 @@ function skp_get_query_skope() {
         // those settings have to be copied in the skp__post_page_{$static_home_page_id} skope settings
 
         // If we are on the real home page, but displaying a static page then set the static page id as obj_id
-        if ( ! is_home() && 'page' === get_option( 'show_on_front' ) ) {
+        if ( !is_home() && 'page' === get_option( 'show_on_front' ) ) {
             $home_page_id = get_option( 'page_on_front' );
             if ( 0 < $home_page_id ) {
                 $obj_id = $home_page_id;
@@ -347,7 +354,7 @@ function skp_build_skope_id( $args = array() ) {
               $skope_id = strtolower( NIMBLE_SKOPE_ID_PREFIX . $args[ 'skope_string' ] );
           break;
           case 'group' :
-              if ( ! empty( $args[ 'skope_type' ] ) ) {
+              if ( !empty( $args[ 'skope_type' ] ) ) {
                   $skope_id = strtolower( NIMBLE_SKOPE_ID_PREFIX . 'all_' . $args[ 'skope_type' ] );
               }
           break;
@@ -493,7 +500,7 @@ function skp_is_customizing() {
       ||
       ( isset( $_REQUEST['wp_customize'] ) && 'on' == $_REQUEST['wp_customize'] )
       ||
-      ( ! empty( $_GET['customize_changeset_uuid'] ) || ! empty( $_POST['customize_changeset_uuid'] ) )
+      ( !empty( $_GET['customize_changeset_uuid'] ) || !empty( $_POST['customize_changeset_uuid'] ) )
     );
     $is_customize_admin_page_two = is_admin() && isset( $pagenow ) && 'customize.php' == $pagenow;
 
@@ -502,7 +509,7 @@ function skp_is_customizing() {
     //hu_is_customize_preview_frame() ?
     // Note : is_customize_preview() is not able to differentiate when previewing in the customizer and when previewing a changeset draft.
     // @todo => change this
-    } else if ( is_customize_preview() || ( ! is_admin() && isset($_REQUEST['customize_messenger_channel']) ) ) {
+    } else if ( is_customize_preview() || ( !is_admin() && isset($_REQUEST['customize_messenger_channel']) ) ) {
         $is_customizing = true;
     // hu_doing_customizer_ajax()
     } else if ( $_is_ajaxing_from_customizer && ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
@@ -516,13 +523,13 @@ function skp_is_customizing() {
 * @return  boolean
 */
 function skp_is_customize_preview_frame() {
-  return is_customize_preview() || ( ! is_admin() && isset($_REQUEST['customize_messenger_channel']) );
+  return is_customize_preview() || ( !is_admin() && isset($_REQUEST['customize_messenger_channel']) );
 }
 
 /**
 * @return  boolean
 */
 function skp_is_previewing_live_changeset() {
-  return ! isset( $_POST['customize_messenger_channel']) && is_customize_preview();
+  return !isset( $_POST['customize_messenger_channel']) && is_customize_preview();
 }
 ?>

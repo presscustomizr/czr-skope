@@ -1,6 +1,6 @@
 <?php
 
-if ( ! class_exists( 'Flat_Skope_Clean_Final' ) ) :
+if ( !class_exists( 'Flat_Skope_Clean_Final' ) ) :
     final class Flat_Skope_Clean_Final extends Flat_Export_Skope_Data_And_Send_To_Panel {
           // Fired in Flat_Skop_Base::__construct()
           public function skp_schedule_cleaning_on_object_delete() {
@@ -16,14 +16,14 @@ if ( ! class_exists( 'Flat_Skope_Clean_Final' ) ) :
           // don't have to return anything
           public function skp_clean_skopified_posts( $postid ) {
               $deletion_candidate = get_post( $postid );
-              if ( ! $deletion_candidate || ! is_object( $deletion_candidate ) )
+              if ( !$deletion_candidate || !is_object( $deletion_candidate ) )
                 return;
 
               // Stop here if the post type is not considered "viewable".
               // For built-in post types such as posts and pages, the 'public' value will be evaluated.
               // For all others, the 'publicly_queryable' value will be used.
               // For example, the 'revision' post type, which is purely internal and not skopable, won't pass this test.
-              if ( ! is_post_type_viewable( $deletion_candidate -> post_type ) )
+              if ( !is_post_type_viewable( $deletion_candidate -> post_type ) )
                 return;
 
               // Force the skope parts normally retrieved with skp_get_query_skope()
@@ -50,7 +50,7 @@ if ( ! class_exists( 'Flat_Skope_Clean_Final' ) ) :
           // 'delete_term_taxonomy' Fires immediately before a term taxonomy ID is deleted.
           public function skp_clean_skopified_taxonomies( $term_id ) {
               $deletion_candidate = get_term( $term_id );
-              if ( ! $deletion_candidate || ! is_object( $deletion_candidate ) )
+              if ( !$deletion_candidate || !is_object( $deletion_candidate ) )
                 return;
 
               //error_log( print_r( $deletion_candidate, true ) );
