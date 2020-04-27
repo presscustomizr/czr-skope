@@ -104,12 +104,6 @@ function skp_get_skope( $_requesting_wot = null, $_return_string = true, $reques
     // error_log( print_r( $parts, true ) );
     // error_log( '</SKOPE PARTS>' );
 
-    // if ( !is_array( $requested_parts ) || empty( $requested_parts ) ) {
-    //   error_log( '<skp_get_query_skope()>' );
-    //   error_log( print_r( skp_get_query_skope(), true ) );
-    //   error_log( '</skp_get_query_skope()>' );
-    // }
-
     $_return  = array();
     $meta_type = $type = $obj_id = false;
 
@@ -159,7 +153,6 @@ function skp_get_skope( $_requesting_wot = null, $_return_string = true, $reques
                 if ( defined( 'NIMBLE_DEV' ) && NIMBLE_DEV ) {
                     error_log( __FUNCTION__ . ' error when building the local skope, no object_id provided.');
                     error_log( print_r( $parts, true) );
-                    sek_error_log('CURRENT FILTER ?' . current_filter() );
                 }
             }
         break;
@@ -203,11 +196,13 @@ function skp_get_skope( $_requesting_wot = null, $_return_string = true, $reques
 function skp_get_query_skope() {
     //don't call get_queried_object if the $query is not defined yet
     global $wp_the_query;
-    if ( !isset( $wp_the_query ) || empty( $wp_the_query ) )
+    if ( !isset( $wp_the_query ) || empty( $wp_the_query ) ) {
       return array();
+    }
     // is it cached already ?
-    if ( !empty( Flat_Skop_Base()->query_skope ) )
+    if ( !empty( Flat_Skop_Base()->query_skope ) ) {
       return Flat_Skop_Base()->query_skope;
+    }
 
     $queried_object  = get_queried_object();
 
@@ -224,17 +219,17 @@ function skp_get_query_skope() {
     // - search page
     if ( !is_null( $queried_object ) && is_object( $queried_object ) ) {
         //post, custom post types, page
-        if ( isset($queried_object -> post_type) ) {
+        if ( isset($queried_object->post_type) ) {
             $meta_type  = 'post';
-            $type       = $queried_object -> post_type;
-            $obj_id     = $queried_object -> ID;
+            $type       = $queried_object->post_type;
+            $obj_id     = $queried_object->ID;
         }
 
         //taxinomies : tags, categories, custom tax type
-        if ( isset($queried_object -> taxonomy) && isset($queried_object -> term_id) ) {
+        if ( isset($queried_object->taxonomy) && isset($queried_object->term_id) ) {
             $meta_type  = 'tax';
-            $type       = $queried_object -> taxonomy;
-            $obj_id     = $queried_object -> term_id;
+            $type       = $queried_object->taxonomy;
+            $obj_id     = $queried_object->term_id;
         }
     }
 
@@ -242,13 +237,13 @@ function skp_get_query_skope() {
     if ( is_author() ) {
         $meta_type  = 'user';
         $type       = 'author';
-        $obj_id     = $wp_the_query ->get( 'author' );
+        $obj_id     = $wp_the_query->get( 'author' );
     }
 
     //SKOPES WITH NO GROUPS
     //post type archive object
     if ( is_post_type_archive() ) {
-        $obj_id     = 'post_type_archive' . '_'. $wp_the_query ->get( 'post_type' );
+        $obj_id     = 'post_type_archive' . '_'. $wp_the_query->get( 'post_type' );
     }
     if ( is_404() ) {
         $obj_id  = '404';
@@ -291,7 +286,7 @@ function skp_get_query_skope() {
 
     // cache now
     if ( did_action( 'wp' ) ) {
-        Flat_Skop_Base()->query_skope = apply_filters( 'skp_get_query_skope' , array( 'meta_type' => $meta_type , 'type' => $type , 'obj_id' => $obj_id ) , $queried_object );
+        Flat_Skop_Base()->query_skope = apply_filters( 'skp_get_query_skope' , array( 'meta_type' => $meta_type , 'type' => $type , 'obj_id' => $obj_id ), $queried_object );
     }
 
     return Flat_Skop_Base()->query_skope;
@@ -323,7 +318,7 @@ function skp_get_skope_id( $level = 'local' ) {
         $skope_id_to_return = array_key_exists( $level, $new_skope_ids ) ? $new_skope_ids[ $level ] : '_skope_not_set_';
     }
     // error_log('$skope_id_to_return => ' . $level . ' ' . $skope_id_to_return );
-    // error_log( print_r( Flat_Skop_Base() -> current_skope_ids , true ) );
+    // error_log( print_r( Flat_Skop_Base()->current_skope_ids , true ) );
     return apply_filters( 'skp_get_skope_id', $skope_id_to_return, $level );
 }
 
@@ -402,24 +397,24 @@ function skp_get_skope_title( $args = array() ) {
             switch ($meta_type) {
                 case 'post':
                   $type_obj = get_post_type_object( $type );
-                  $title .= sprintf( '%1$s "%3$s" (id : %2$s)', strtolower( $type_obj -> labels -> singular_name ), $_id, get_the_title( $_id ) );
+                  $title .= sprintf( '%1$s "%3$s" (id : %2$s)', strtolower( $type_obj->labels->singular_name ), $_id, get_the_title( $_id ) );
                   break;
 
                 case 'tax':
                   $type_obj = get_taxonomy( $type );
                   $term = get_term( $_id, $type );
-                  $title .= sprintf( '%1$s "%3$s" (id : %2$s)', strtolower( $type_obj -> labels -> singular_name ), $_id, $term -> name );
+                  $title .= sprintf( '%1$s "%3$s" (id : %2$s)', strtolower( $type_obj->labels->singular_name ), $_id, $term->name );
                   break;
 
                 case 'user':
                   $author = get_userdata( $_id );
-                  $title .= sprintf( '%1$s "%3$s" (id : %2$s)', __('user', 'text_doma'), $_id, $author -> user_login );
+                  $title .= sprintf( '%1$s "%3$s" (id : %2$s)', __('user', 'text_doma'), $_id, $author->user_login );
                   break;
             }
         } else if ( ( 'trans' == $_dyn_type || skp_skope_has_no_group( $skope ) ) ) {
             if ( is_post_type_archive() ) {
                 global $wp_the_query;
-                $title .= sprintf( __( '%1$s archive page', 'text_doma'), $wp_the_query ->get( 'post_type' ) );
+                $title .= sprintf( __( '%1$s archive page', 'text_doma'), $wp_the_query->get( 'post_type' ) );
             } else {
                 $title .= strtolower( $skope );
             }
@@ -432,12 +427,12 @@ function skp_get_skope_title( $args = array() ) {
         switch( $meta_type ) {
             case 'post' :
                 $type_obj = get_post_type_object( $type );
-                $title .= strtolower( $type_obj -> labels -> name );
+                $title .= strtolower( $type_obj->labels->name );
             break;
 
             case 'tax' :
                 $type_obj = get_taxonomy( $type );
-                $title .= strtolower( $type_obj -> labels -> name );
+                $title .= strtolower( $type_obj->labels->name );
             break;
 
             case 'user' :

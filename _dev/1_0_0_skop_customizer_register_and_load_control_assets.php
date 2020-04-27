@@ -25,7 +25,7 @@ if ( !class_exists( 'Flat_Skop_Register_And_Load_Control_Assets' ) ) :
                   //dev / debug mode mode?
                   $_prod_script_path,
                   array('customize-controls' , 'jquery', 'underscore'),
-                  ( defined('WP_DEBUG') && true === WP_DEBUG ) ? time() :  wp_get_theme() -> version,
+                  ( defined('WP_DEBUG') && true === WP_DEBUG ) ? time() :  wp_get_theme()->version,
                   $in_footer = true
               );
 

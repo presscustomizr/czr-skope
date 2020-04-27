@@ -23,13 +23,13 @@ if ( !class_exists( 'Flat_Skope_Clean_Final' ) ) :
               // For built-in post types such as posts and pages, the 'public' value will be evaluated.
               // For all others, the 'publicly_queryable' value will be used.
               // For example, the 'revision' post type, which is purely internal and not skopable, won't pass this test.
-              if ( !is_post_type_viewable( $deletion_candidate -> post_type ) )
+              if ( !is_post_type_viewable( $deletion_candidate->post_type ) )
                 return;
 
               // Force the skope parts normally retrieved with skp_get_query_skope()
               $skope_string = skp_get_skope( null, true, array(
                   'meta_type' => 'post',
-                  'type'      => $deletion_candidate -> post_type,
+                  'type'      => $deletion_candidate->post_type,
                   'obj_id'    => $postid
               ) );
 
@@ -58,7 +58,7 @@ if ( !class_exists( 'Flat_Skope_Clean_Final' ) ) :
               // Force the skope parts normally retrieved with skp_get_query_skope()
               $skope_string = skp_get_skope( null, true, array(
                   'meta_type' => 'tax',
-                  'type'      => $deletion_candidate -> taxonomy,
+                  'type'      => $deletion_candidate->taxonomy,
                   'obj_id'    => $term_id
               ) );
 
