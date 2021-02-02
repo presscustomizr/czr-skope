@@ -338,7 +338,7 @@ function skp_get_skope_id( $level = 'local' ) {
 
     // At this point, the skope_id should be set
     if ( '_skope_not_set_' === $skope_id_to_return ) {
-        error_log( __FUNCTION__ . ' error => skope_id not set for level ' . $level );
+        //error_log( __FUNCTION__ . ' error => skope_id not set for level ' . $level );
     }
     // error_log('$skope_id_to_return => ' . $level . ' ' . $skope_id_to_return );
     // error_log( print_r( Flat_Skop_Base()->current_skope_ids , true ) );
