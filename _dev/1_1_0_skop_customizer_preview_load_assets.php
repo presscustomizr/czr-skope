@@ -67,8 +67,12 @@ if ( !class_exists( 'Flat_Export_Skope_Data_And_Send_To_Panel' ) ) :
           // introduced in october 2019 for https://github.com/presscustomizr/nimble-builder/issues/401
           private function _skp_get_json_export_ready_query_data() {
               global $wp_query;
+              add_filter('get_the_archive_title_prefix', '__return_false');
+              $archive_title = get_the_archive_title();
+              remove_filter('get_the_archive_title_prefix', '__return_false');
               return [
                 'is_singular' => $wp_query->is_singular,
+                'the_archive_title' => $archive_title,
                 'post_id' => get_the_ID(),
                 'query_vars' => $wp_query->query_vars
               ];
