@@ -69,7 +69,8 @@ if ( !class_exists( 'Flat_Export_Skope_Data_And_Send_To_Panel' ) ) :
               global $wp_query;
               return [
                 'is_singular' => $wp_query->is_singular,
-                'post_id' => get_the_ID()
+                'post_id' => get_the_ID(),
+                'query_vars' => $wp_query->query_vars
               ];
           }
 
