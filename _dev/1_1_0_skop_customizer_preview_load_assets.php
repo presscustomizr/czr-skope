@@ -73,6 +73,9 @@ if ( !class_exists( 'Flat_Export_Skope_Data_And_Send_To_Panel' ) ) :
               return [
                 'is_singular' => $wp_query->is_singular,
                 'the_archive_title' => $archive_title,
+                'the_archive_description' => get_the_archive_description(),
+                'the_previous_post_link' => is_singular() ? get_previous_post_link( $format = '%link' ) : '',
+                'the_next_post_link' => is_singular() ? get_next_post_link( $format = '%link' ) : '',
                 'post_id' => get_the_ID(),
                 'query_vars' => $wp_query->query_vars
               ];
