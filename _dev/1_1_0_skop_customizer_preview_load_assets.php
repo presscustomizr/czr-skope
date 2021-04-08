@@ -72,6 +72,7 @@ if ( !class_exists( 'Flat_Export_Skope_Data_And_Send_To_Panel' ) ) :
               remove_filter('get_the_archive_title_prefix', '__return_false');
               return [
                 'is_singular' => $wp_query->is_singular,
+                'is_archive' => $wp_query->is_archive,
                 'the_archive_title' => $archive_title,
                 'the_archive_description' => get_the_archive_description(),
                 'the_previous_post_link' => is_singular() ? get_previous_post_link( $format = '%link' ) : '',
